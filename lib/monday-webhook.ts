@@ -167,15 +167,20 @@ async function handleGroupMove(
       .eq("id", contractorLead.lead_id)
       .single<Lead>()
 
-    await sendLeadPaidEmail(contractor.email, lead?.property_name ?? "your lead", remaining)
+    // Credit deduction (above) always runs. The contractor-facing "credit
+    // deducted" / low-credit emails are gated OFF until LEAD_PAID_EMAILS_ENABLED
+    // is set to "true" in the env, so deductions happen silently for now.
+    if (process.env.LEAD_PAID_EMAILS_ENABLED === "true") {
+      await sendLeadPaidEmail(contractor.email, lead?.property_name ?? "your lead", remaining)
 
-    if (remaining <= LOW_CREDIT_THRESHOLD) {
-      const recipients = [
-        contractor.email,
-        ...(contractor.notification_emails ?? []),
-      ].filter(Boolean) as string[]
-      for (const r of recipients) {
-        await sendLowCreditEmail(r, remaining)
+      if (remaining <= LOW_CREDIT_THRESHOLD) {
+        const recipients = [
+          contractor.email,
+          ...(contractor.notification_emails ?? []),
+        ].filter(Boolean) as string[]
+        for (const r of recipients) {
+          await sendLowCreditEmail(r, remaining)
+        }
       }
     }
 
