@@ -23,7 +23,7 @@ export default async function PortalLayout({
   const { data: contractor } = await supabase
     .from("contractors")
     .select("*")
-    .eq("id", user.id)
+    .eq("email", user.email)
     .single<Contractor>()
 
   // No contractor row yet, or still pending review → holding screen
