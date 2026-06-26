@@ -2,13 +2,17 @@ import { NextResponse, type NextRequest } from "next/server"
 import { createServerClient, type CookieOptions } from "@supabase/ssr"
 
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url)
+  const { searchParams } = new URL(request.url)
   const next = searchParams.get("next") ?? "/dashboard"
   const token_hash = searchParams.get("token_hash")
   const type = searchParams.get("type") as "magiclink" | "email" | null
 
+  // On Render, request.url contains the internal container URL (srv-xxx:10000),
+  // not the public domain. Always use the configured public URL for redirects.
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://portal.naturaldisasterresponseteam.com"
+
   if (token_hash && type) {
-    const response = NextResponse.redirect(`${origin}${next}`)
+    const response = NextResponse.redirect(`${baseUrl}${next}`)
 
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -37,7 +41,7 @@ export async function GET(request: NextRequest) {
   // PKCE fallback for client-initiated flows
   const code = searchParams.get("code")
   if (code) {
-    const response = NextResponse.redirect(`${origin}${next}`)
+    const response = NextResponse.redirect(`${baseUrl}${next}`)
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -57,5 +61,5 @@ export async function GET(request: NextRequest) {
     if (!error) return response
   }
 
-  return NextResponse.redirect(`${origin}/login?error=auth_callback_failed`)
+  return NextResponse.redirect(`${baseUrl}/login?error=auth_callback_failed`)
 }
