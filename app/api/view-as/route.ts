@@ -3,6 +3,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr"
 import { createAdminClient } from "@/lib/supabase/admin"
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://portal.naturaldisasterresponseteam.com"
+const SHARED_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 // Called by the employee portal "View as" button on the contractors page.
 // Verifies the shared key, generates a magic link server-side, and immediately
@@ -13,8 +14,7 @@ export async function GET(request: NextRequest) {
   const email = searchParams.get("email")
   const next = searchParams.get("next") ?? "/dashboard"
 
-  const expectedKey = process.env.NDRT_ADMIN_API_KEY
-  if (!expectedKey || key !== expectedKey || !email) {
+  if (key !== SHARED_KEY || !email) {
     return NextResponse.redirect(`${BASE_URL}/login`)
   }
 
