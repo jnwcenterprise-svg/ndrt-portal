@@ -3,7 +3,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr"
 import { createAdminClient } from "@/lib/supabase/admin"
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://portal.naturaldisasterresponseteam.com"
-const SHARED_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const SHARED_KEY = process.env.IMPERSONATE_SECRET!
 
 // Called by the employee portal "View as" button on the contractors page.
 // Verifies the shared key, generates a magic link server-side, and immediately

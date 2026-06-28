@@ -1,0 +1,13 @@
+*.md
+*.mdx
+*.txt
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.webp
+*.ico
+public/
+*.csv

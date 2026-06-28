@@ -25,6 +25,8 @@ const CONTRACTOR_EVENTS = [
 const SANDBOX_BOARD_IDS = (process.env.NDRT_SANDBOX_BOARD_IDS ?? "18416066044")
   .split(",").map((s) => s.trim()).filter(Boolean)
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
 async function mondayRequest(query: string, variables: Record<string, unknown> = {}) {
   const res = await fetch("https://api.monday.com/v2", {
     method: "POST",
@@ -81,6 +83,7 @@ async function registerMissingEvents(
       )
       console.log(`  ✓ ${label} / ${event} — registered`)
       counts.registered++
+      await sleep(300)
     } catch (e: any) {
       console.log(`  ✗ ${label} / ${event} — ${e.message}`)
       counts.errors++
